@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import '@tensorflow/tfjs-node';
 import { node } from '@tensorflow/tfjs-node';
 import { ModelService } from '../common/model.service';
@@ -25,6 +25,7 @@ export class PredictService {
     // Debugging output
     console.log('Prediction Score:', predictionScore);
     console.log('Max Prediction:', Math.max(...predictionScore));
+    console.log('Confidence:', confidenceScore);
 
     // Tentukan kelas berdasarkan index
     const probabilitiesResult = predictionScore[0]; // Pastikan untuk mengakses hasil dengan benar
@@ -34,6 +35,11 @@ export class PredictService {
       classificationLabel === 'Cancer'
         ? 'Segera periksa ke dokter!'
         : 'Penyakit kanker tidak terdeteksi.';
+    if (confidenceScore > 1 && classificationLabel == 'Non-cancer') {
+      throw new BadRequestException(
+        'Terjadi kesalahan dalam melakukan prediksi',
+      );
+    }
     return {
       id: crypto.randomUUID(),
       result: classificationLabel,

@@ -23,7 +23,7 @@ export class PredictController {
   async create(
     @UploadedFile() imageFile: Express.Multer.File,
     @Res() expressResponse: Response, // Menambahkan Response sebagai parameter
-  ): Promise<WebResponse> {
+  ) {
     if (imageFile.size > 1000000) {
       expressResponse.status(413).json({
         // Mengatur status 413 dan mengembalikan respons JSON
@@ -31,11 +31,20 @@ export class PredictController {
         message: 'Payload content length greater than maximum allowed: 1000000',
       });
     }
-    return {
-      status: 'success',
-      message: 'Model is predicted successfully',
-      data: await this.predictService.handlePredict(imageFile),
-    };
+    try {
+      const resultPrediction =
+        await this.predictService.handlePredict(imageFile);
+      expressResponse.status(201).json({
+        status: 'success',
+        message: 'Model is predicted successfully',
+        data: resultPrediction,
+      });
+    } catch (clientError) {
+      expressResponse.status(400).json({
+        status: 'fail',
+        message: clientError.message,
+      });
+    }
   }
 
   @Get()
