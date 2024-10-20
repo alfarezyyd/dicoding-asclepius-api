@@ -6,10 +6,13 @@ import {
   Delete,
   UploadedFile,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import { PredictService } from './predict.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { WebResponse } from '../model/web.response';
+
+import { Response } from 'express';
 
 @Controller('predict')
 export class PredictController {
@@ -19,7 +22,15 @@ export class PredictController {
   @UseInterceptors(FileInterceptor('image'))
   async create(
     @UploadedFile() imageFile: Express.Multer.File,
+    @Res() expressResponse: Response, // Menambahkan Response sebagai parameter
   ): Promise<WebResponse> {
+    if (imageFile.size > 1000000) {
+      expressResponse.status(413).json({
+        // Mengatur status 413 dan mengembalikan respons JSON
+        status: 'fail',
+        message: 'Payload content length greater than maximum allowed: 1000000',
+      });
+    }
     return {
       status: 'success',
       message: 'Model is predicted successfully',
