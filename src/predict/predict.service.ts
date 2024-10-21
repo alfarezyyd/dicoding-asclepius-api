@@ -61,7 +61,23 @@ export class PredictService {
     return predictResult;
   }
 
-  findAll() {
-    return `This action returns all predict`;
+  async findAll() {
+    const firestoreInstance = new Firestore();
+    const predictionsRef = firestoreInstance.collection('predictions');
+    const querySnapshot = await predictionsRef.get();
+    const responsePayload = [];
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, doc.data());
+      responsePayload.push({
+        id: doc.id,
+        history: {
+          result: doc.data().result,
+          createdAt: doc.data().createdAt,
+          suggestion: doc.data().suggestion,
+          id: doc.id,
+        },
+      });
+    });
+    return responsePayload;
   }
 }

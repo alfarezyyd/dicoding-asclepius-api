@@ -2,8 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Param,
-  Delete,
   UploadedFile,
   UseInterceptors,
   Res,
@@ -45,8 +43,11 @@ export class PredictController {
     }
   }
 
-  @Get()
-  findAll() {
-    return this.predictService.findAll();
+  @Get('histories')
+  async findAll() {
+    return {
+      status: 'success',
+      data: await this.predictService.findAll(),
+    };
   }
 }
