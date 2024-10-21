@@ -23,7 +23,7 @@ export class PredictController {
     @Res() expressResponse: Response, // Menambahkan Response sebagai parameter
   ) {
     if (imageFile.size > 1000000) {
-      expressResponse.status(413).json({
+      return expressResponse.status(413).json({
         // Mengatur status 413 dan mengembalikan respons JSON
         status: 'fail',
         message: 'Payload content length greater than maximum allowed: 1000000',
@@ -32,13 +32,13 @@ export class PredictController {
     try {
       const resultPrediction =
         await this.predictService.handlePredict(imageFile);
-      expressResponse.status(201).json({
+      return expressResponse.status(201).json({
         status: 'success',
         message: 'Model is predicted successfully',
         data: resultPrediction,
       });
     } catch (clientError) {
-      expressResponse.status(400).json({
+      return expressResponse.status(400).json({
         status: 'fail',
         message: clientError.message,
       });
