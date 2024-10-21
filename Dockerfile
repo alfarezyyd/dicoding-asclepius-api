@@ -1,23 +1,20 @@
-# Step 1: Gunakan base image resmi Node.js
-FROM node:22-alpine
+# Base image
+FROM node:22
 
-# Step 2: Set working directory dalam container
-WORKDIR /app
+# Create app directory
+WORKDIR /usr/src/app
 
-# Step 3: Copy file package.json dan package-lock.json ke dalam container
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Step 4: Install dependencies
-RUN npm install --omit=dev
+# Install app dependencies
+RUN npm install
 
-# Step 5: Copy seluruh kode aplikasi ke dalam container
+# Copy app source
 COPY . .
 
-# Step 6: Build aplikasi (opsional, jika menggunakan NestJS dengan build step)
+# Create a "dist" folder with the production build
 RUN npm run build
 
-# Step 7: Ekspos port (Cloud Run menggunakan port 8080 secara default)
-EXPOSE 8080
-
-# Step 8: Tentukan perintah untuk menjalankan aplikasi
-CMD ["npm", "run", "start:prod"]
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]
