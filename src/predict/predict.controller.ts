@@ -10,8 +10,6 @@ import {
 } from '@nestjs/common';
 import { PredictService } from './predict.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { WebResponse } from '../model/web.response';
-
 import { Response } from 'express';
 
 @Controller('predict')

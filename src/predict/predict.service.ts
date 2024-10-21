@@ -3,10 +3,15 @@ import '@tensorflow/tfjs-node';
 import { node } from '@tensorflow/tfjs-node';
 import { ModelService } from '../common/model.service';
 import PredictResponseDto from './dto/predict.response.dto';
+import { Firestore } from '@google-cloud/firestore';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PredictService {
-  constructor(private readonly modelService: ModelService) {}
+  constructor(
+    private readonly modelService: ModelService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async handlePredict(
     imageFile: Express.Multer.File,
@@ -40,12 +45,20 @@ export class PredictService {
         'Terjadi kesalahan dalam melakukan prediksi',
       );
     }
-    return {
-      id: crypto.randomUUID(),
+    // Insert into firestore
+    const firestoreInstance = new Firestore();
+    const randomGeneratedUUID = crypto.randomUUID();
+    const predictResult = {
+      id: randomGeneratedUUID,
       result: classificationLabel,
       suggestion: suggestionResult,
       createdAt: new Date().toISOString(),
     };
+    const predictCollection = firestoreInstance.collection('predictions');
+    await predictCollection.doc(randomGeneratedUUID).set(predictResult);
+
+    // Insert into bucket
+    return predictResult;
   }
 
   findAll() {
