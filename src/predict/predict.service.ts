@@ -64,12 +64,4 @@ export class PredictService {
   findAll() {
     return `This action returns all predict`;
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} predict`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} predict`;
-  }
 }

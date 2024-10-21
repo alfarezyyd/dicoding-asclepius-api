@@ -49,14 +49,4 @@ export class PredictController {
   findAll() {
     return this.predictService.findAll();
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.predictService.findOne(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.predictService.remove(+id);
-  }
 }
