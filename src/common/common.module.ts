@@ -12,6 +12,6 @@ import { ModelService } from './model.service';
     ConfigModule.forRoot({}),
   ],
   providers: [MulterService, ModelService],
-  exports: [MulterModule, ModelService],
+  exports: [MulterModule, ModelService, ConfigModule],
 })
 export class CommonModule {}
