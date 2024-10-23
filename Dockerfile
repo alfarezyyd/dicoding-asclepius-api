@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Expose port yang digunakan oleh aplikasi
-EXPOSE 3000
+EXPOSE 8080
 
 # Jalankan aplikasi
 CMD ["node", "dist/main.js"]
