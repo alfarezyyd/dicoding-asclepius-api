@@ -1,20 +1,51 @@
-# Base image
-FROM node:22
+# Tahap 1: Build aplikasi dengan Node.js
+FROM node:22 AS builder
 
-# Create app directory
+# Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Salin package.json dan package-lock.json
 COPY package*.json ./
 
-# Install app dependencies
+# Instal dependensi
 RUN npm install
 
-# Copy app source
+# Salin seluruh kode aplikasi ke dalam container
 COPY . .
 
-# Create a "dist" folder with the production build
+# Bangun aplikasi NestJS
 RUN npm run build
 
-# Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+# Tahap 2: Image TensorFlow sebagai runtime
+FROM tensorflow/tensorflow:latest
+
+# Update package list dan instal curl untuk menambahkan NodeSource
+RUN apt-get update && apt-get install -y curl
+
+# Tambahkan repository Node.js versi 22
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+
+# Instal Node.js dan npm
+RUN apt-get install -y nodejs
+
+# Verifikasi instalasi Node.js
+RUN node -v && npm -v
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Salin hasil build dari tahap 1
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/package*.json ./
+
+# Salin file .env jika ada
+COPY .env ./
+
+# Instal dependensi aplikasi
+RUN npm install --production
+
+# Expose port aplikasi
+EXPOSE 3000
+
+# Jalankan aplikasi
+CMD ["node", "dist/main.js"]
