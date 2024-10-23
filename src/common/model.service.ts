@@ -23,7 +23,7 @@ export class ModelService {
   async downloadFolder(localPath: string) {
     const bucketStorage = new Storage();
     const [files] = await bucketStorage
-      .bucket('submissionmlgc-alfarezyyd-bucket-prod')
+      .bucket('submissionmlgc-alfarezyyd-bucket-production')
       .getFiles({ prefix: 'submissions-model' });
     console.log(files);
 
